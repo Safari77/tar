@@ -1839,7 +1839,8 @@ dump_file0 (struct tar_stat_info *st, char const *name, char const *p)
 	    }
 	  else if (atime_preserve_option == replace_atime_preserve
 		   && timespec_cmp (st->atime, get_stat_atime (&st2)) != 0
-		   && set_file_atime (fd, f.fd, f.base, st->atime) < 0)
+		   && set_file_atime (fd, f.fd, f.base, st->atime) < 0
+		   && errno != EROFS)
 	    utime_error (p);
 	}
 
