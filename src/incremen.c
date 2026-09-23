@@ -1663,10 +1663,15 @@ purge_directory (char const *directory_name)
 	  char *d = safer_name_suffix (arc + 1, false, absolute_names_option);
 	  idx_t len = strlen (d);
 	  temp_stub = xrealloc (temp_stub, len + 1 + sizeof TEMP_DIR_TEMPLATE);
-	  char *copy_end = mempcpy (temp_stub, d, len);
-	  *copy_end = '/';
-	  memcpy (copy_end + !ISSLASH (copy_end[-1]), TEMP_DIR_TEMPLATE,
-		  sizeof TEMP_DIR_TEMPLATE);
+	  if (len == 0)
+	      memcpy (temp_stub, TEMP_DIR_TEMPLATE, sizeof TEMP_DIR_TEMPLATE);
+	  else
+	    {
+	      char *copy_end = mempcpy (temp_stub, d, len);
+	      if (!ISSLASH (copy_end[-1]))
+	        *copy_end++ = '/';
+	      memcpy (copy_end, TEMP_DIR_TEMPLATE, sizeof TEMP_DIR_TEMPLATE);
+	    }
 	  struct fdbase f = fdbase (temp_stub);
 	  if (f.fd == BADFD
 	      || !mkdtempat (f.fd, temp_stub + (f.base - temp_stub)))
